@@ -10,6 +10,7 @@ import com.chq.coursearrange.entity.CoursePlan;
 import com.chq.coursearrange.entity.request.ConstantInfo;
 import com.chq.coursearrange.util.ClassUtil;
 import com.chq.coursearrange.service.ClassTaskService;
+import com.chq.coursearrange.service.NotificationService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,8 @@ public class ClassTaskServiceImpl extends ServiceImpl<ClassTaskDao, ClassTask> i
     private ClassInfoDao classInfoDao;
     @Autowired
     private CoursePlanDao coursePlanDao;
+    @Autowired
+    private NotificationService notificationService;
 
 
     // 不固定上课时间 1
@@ -83,6 +86,15 @@ public class ClassTaskServiceImpl extends ServiceImpl<ClassTaskDao, ClassTask> i
                         coursePlan.getTeacherNo(), coursePlan.getClassroomNo(), coursePlan.getClassTime(), semester);
             }
             log.info("完成排课,耗时：" + (System.currentTimeMillis() - start));
+            
+            // 发送排课完成通知
+            try {
+                notificationService.sendScheduleCompleteNotification(semester);
+                log.info("排课完成通知已发送");
+            } catch (Exception notifyException) {
+                log.error("发送排课完成通知失败", notifyException);
+            }
+            
             return ServerResponse.ofSuccess("排课成功！");
         } catch (Exception e) {
             log.error("the error message is:" + "    " + e.getMessage());

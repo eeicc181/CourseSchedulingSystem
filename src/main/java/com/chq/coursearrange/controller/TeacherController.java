@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
@@ -89,7 +91,7 @@ public class TeacherController {
      * @return
      */
     @PostMapping("/login")
-    public ServerResponse teacherLogin(@RequestBody UserLoginRequest userLoginRequest) {
+    public ServerResponse teacherLogin(@Valid @RequestBody UserLoginRequest userLoginRequest) {
         Map<String, Object> map = new HashMap<>();
         QueryWrapper<Teacher> wrapper = new QueryWrapper<>();
         wrapper.eq("teacher_no", userLoginRequest.getUsername());
